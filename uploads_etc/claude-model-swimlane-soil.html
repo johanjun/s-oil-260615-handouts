@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude 모델 릴리스 타임라인 — 스윔레인</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#07080c; --text:#eef1f6; --muted:#a9b2c2; --faint:#7b8597;
+    --line:#1c2230; --line-br:#2a3242; --panel:#0d1018;
+    /* 계열 색 — 다크 위에서 빛나는 네온 변주 */
+    --mythos:#ffcf4d; --opus:#9d8bff; --sonnet:#1ee089; --haiku:#ff7a6b; --etc:#6f7d96;
+    --s-yellow:#FFB400; --s-green-br:#1ee089;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{
+    background:var(--bg);
+    background-image:
+      radial-gradient(60% 50% at 80% 12%, rgba(255,180,0,0.14) 0%, transparent 60%),
+      radial-gradient(55% 55% at 12% 96%, rgba(30,224,137,0.14) 0%, transparent 60%);
+    color:var(--text);
+    font-family:'IBM Plex Sans KR','Pretendard','Apple SD Gothic Neo',system-ui,sans-serif;
+    padding:40px 22px 64px;-webkit-font-smoothing:antialiased;min-height:100vh}
+  .wrap{max-width:1080px;margin:0 auto}
+  .kicker{font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:500;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--s-green-br);text-shadow:0 0 14px rgba(30,224,137,.4);
+    display:inline-flex;align-items:center;gap:10px;margin-bottom:14px}
+  .kicker::before{content:'';width:24px;height:1px;background:var(--s-green-br);box-shadow:0 0 8px var(--s-green-br)}
+  h1{font-size:27px;font-weight:700;letter-spacing:-.4px;color:#fff;text-shadow:0 0 36px rgba(255,255,255,.08)}
+  .glow{color:var(--s-yellow);text-shadow:0 0 22px rgba(255,180,0,.55),0 0 44px rgba(255,180,0,.25)}
+  .sub{color:var(--muted);font-size:14px;margin-top:8px}
+  .filters{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:24px 0 4px}
+  .flabel{font-size:13px;color:var(--faint);margin-right:2px;font-family:'JetBrains Mono',monospace;letter-spacing:.04em}
+  .chip{display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;
+    font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--line-br);
+    background:rgba(255,255,255,.04);color:var(--text);transition:opacity .15s,background .15s}
+  .chip .cd{width:9px;height:9px;border-radius:50%;box-shadow:0 0 8px currentColor}
+  .chip:hover{background:rgba(255,255,255,.08)}
+  .chip.off{background:transparent;color:var(--faint);border-color:var(--line)}
+  .chip.off .cd{opacity:.3;box-shadow:none}
+  .reset{margin-left:auto;font-size:12.5px;color:var(--muted);background:none;border:none;cursor:pointer;
+    text-decoration:underline;font-family:inherit}
+  .reset:hover{color:var(--text)}
+  .legend{display:flex;gap:16px;margin:12px 2px 4px;font-size:12.5px;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .legend i{width:11px;height:11px;border-radius:3px;display:inline-block;box-shadow:0 0 8px currentColor}
+  .card{background:var(--panel);border:1px solid var(--line-br);border-radius:16px;padding:14px 10px;margin-top:12px;
+    box-shadow:0 0 0 1px rgba(255,255,255,.02),0 24px 60px -30px rgba(0,0,0,.8)}
+  .chart svg{width:100%;height:auto;display:block}
+  .chart text{font-family:inherit}
+  .desc{color:var(--muted);font-size:12.8px;margin:14px 4px 0;min-height:18px;line-height:1.6}
+  .note{color:var(--faint);font-size:12px;border-top:1px dashed var(--line-br);margin-top:26px;padding-top:16px;line-height:1.7}
+  .note b{color:var(--text)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kicker">Anthropic · Release Timeline</div>
+  <h1>Claude 모델 릴리스 <span class="glow">스윔레인</span> 타임라인</h1>
+  <div class="sub" id="sub"></div>
+
+  <div class="filters" id="filters">
+    <span class="flabel">계열 필터</span>
+    <button class="chip" data-fam="Mythos"><i class="cd" style="background:var(--mythos);color:var(--mythos)"></i>Mythos/Fable</button>
+    <button class="chip" data-fam="Opus"><i class="cd" style="background:var(--opus);color:var(--opus)"></i>Opus</button>
+    <button class="chip" data-fam="Sonnet"><i class="cd" style="background:var(--sonnet);color:var(--sonnet)"></i>Sonnet</button>
+    <button class="chip" data-fam="Haiku"><i class="cd" style="background:var(--haiku);color:var(--haiku)"></i>Haiku</button>
+    <button class="reset" id="reset">전체 재설정</button>
+  </div>
+
+  <div class="legend">
+    <span><i style="background:var(--mythos);color:var(--mythos)"></i>Mythos/Fable</span>
+    <span><i style="background:var(--opus);color:var(--opus)"></i>Opus</span>
+    <span><i style="background:var(--sonnet);color:var(--sonnet)"></i>Sonnet</span>
+    <span><i style="background:var(--haiku);color:var(--haiku)"></i>Haiku</span>
+  </div>
+
+  <div class="card"><div class="chart" id="chart"></div></div>
+  <div class="desc" id="desc"></div>
+
+  <div class="note">
+    <b>출처·정확도</b> — namu.wiki <i>Claude/모델</i> + Anthropic 공개 이력 종합. Claude 3~4 계열 일자는 확정적
+    (초기 Claude 1~2.1은 제외). <b>Mythos/Fable 라인은 2026-04-07 Mythos Preview(제한 접근)로 시작 → 2026-06-09 공개 Fable 5 + Mythos 5</b>.
+    Opus 4.8(2026-05-28)도 공식 확정, Opus 4.6/4.7은 재확인 권장(approx). 속 빈 점 = 비공개·제한 접근(Mythos Preview·Mythos 5). 종료일 = 2026-06-15(현재).
+  </div>
+</div>
+
+<script>
+// ---------------- 데이터 (모델별 21개 릴리스) ----------------
+const COL={Mythos:"#ffcf4d",Opus:"#9d8bff",Sonnet:"#1ee089",Haiku:"#ff7a6b"};
+const FAMS=["Mythos","Opus","Sonnet","Haiku"];
+const LABEL={Mythos:"Mythos/Fable"}; // 레인 표시명(내부 키는 Mythos 유지)
+const DATA=[
+  {fam:"Opus",  name:"Claude 3 Opus",       d:"2024-03-04"},
+  {fam:"Sonnet",name:"Claude 3 Sonnet",     d:"2024-03-04"},
+  {fam:"Haiku", name:"Claude 3 Haiku",      d:"2024-03-13"},
+  {fam:"Sonnet",name:"Claude 3.5 Sonnet",   d:"2024-06-20"},
+  {fam:"Sonnet",name:"3.5 Sonnet(신규)",    d:"2024-10-22"},
+  {fam:"Haiku", name:"Claude 3.5 Haiku",    d:"2024-10-22"},
+  {fam:"Sonnet",name:"Claude 3.7 Sonnet",   d:"2025-02-24"},
+  {fam:"Opus",  name:"Claude Opus 4",       d:"2025-05-22"},
+  {fam:"Sonnet",name:"Claude Sonnet 4",     d:"2025-05-22"},
+  {fam:"Opus",  name:"Claude Opus 4.1",     d:"2025-08-05"},
+  {fam:"Sonnet",name:"Claude Sonnet 4.5",   d:"2025-09-29"},
+  {fam:"Haiku", name:"Claude Haiku 4.5",    d:"2025-10-15", approx:true},
+  {fam:"Opus",  name:"Claude Opus 4.5",     d:"2025-11-25"},
+  {fam:"Sonnet",name:"Claude Sonnet 4.6",   d:"2026-02-18"},
+  {fam:"Opus",  name:"Claude Opus 4.6",     d:"2026-02-15", approx:true},
+  {fam:"Opus",  name:"Claude Opus 4.7",     d:"2026-04-16", approx:true},
+  {fam:"Opus",  name:"Claude Opus 4.8",     d:"2026-05-28"},
+  {fam:"Mythos",name:"Mythos Preview",      d:"2026-04-07", restricted:true},
+  {fam:"Mythos",name:"Claude Fable 5",      d:"2026-06-09"},
+  {fam:"Mythos",name:"Claude Mythos 5",     d:"2026-06-09", restricted:true},
+];
+DATA.forEach(o=>o.t=+new Date(o.d));
+const SORTED=[...DATA].sort((a,b)=>a.t-b.t);
+SORTED.forEach((o,i)=>{o.gap = i? Math.round((o.t-SORTED[i-1].t)/86400000) : null;});
+
+const T0=+new Date("2024-03-04"), T1=+new Date("2026-06-15"), SPAN=T1-T0;
+const VW=1000, L=104, R=26;
+const XW=VW-L-R;
+const X=t=>L+(t-T0)/SPAN*XW;
+const fmtK=d=>d.replaceAll("-",".");
+const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+
+// 상태
+const state={fam:{Mythos:true,Opus:true,Sonnet:true,Haiku:true}};
+const vis=o=>state.fam[o.fam];
+
+document.getElementById("sub").textContent =
+  "2024년 3월 4일 ~ 2026년 6월 15일 · "+DATA.length+"개 릴리스";
+
+// 필터 칩
+document.querySelectorAll(".chip").forEach(c=>{
+  c.onclick=()=>{const f=c.dataset.fam; state.fam[f]=!state.fam[f];
+    c.classList.toggle("off",!state.fam[f]); render();};
+});
+document.getElementById("reset").onclick=()=>{
+  FAMS.forEach(f=>state.fam[f]=true);
+  document.querySelectorAll(".chip").forEach(c=>c.classList.remove("off")); render();
+};
+
+// ---------------- 공통 그리드(시간축) ----------------
+function gridX(H,B){
+  let s=`<line x1="${L}" y1="${H-B}" x2="${VW-R}" y2="${H-B}" stroke="#2a3242" stroke-width="1"/>`;
+  for(let y=2024;y<=2026;y++){
+    [1,4,7,10].forEach(m=>{
+      const t=+new Date(`${y}-${String(m).padStart(2,"0")}-01`);
+      if(t<T0||t>T1)return;
+      s+=`<line x1="${X(t)}" y1="22" x2="${X(t)}" y2="${H-B}" stroke="rgba(255,255,255,0.045)" stroke-width="1"/>`;
+    });
+    let ty=+new Date(`${y}-07-01`);
+    if(ty<T0||ty>T1){ // 부분만 보이는 연도(끝/시작)는 가시 구간 중앙에 라벨
+      const a=Math.max(T0,+new Date(`${y}-01-01`)), b=Math.min(T1,+new Date(`${y}-12-31`));
+      ty=(a+b)/2;
+    }
+    if(ty>=T0&&ty<=T1) s+=`<text x="${X(ty)}" y="${H-B+22}" text-anchor="middle" font-size="13" font-weight="700" fill="#7b8597">${y}</text>`;
+  }
+  return s;
+}
+
+// ---------------- 뷰: 스윔레인 ----------------
+function viewSwim(){
+  const H=360,B=40,TOP=26, laneH=(H-B-TOP)/FAMS.length;
+  let s=gridX(H,B);
+  FAMS.forEach((f,i)=>{
+    const y=TOP+(i+0.5)*laneH;
+    s+=`<line x1="${L}" y1="${y}" x2="${VW-R}" y2="${y}" stroke="rgba(255,255,255,0.05)"/>`;
+    s+=`<text x="${L-12}" y="${y+4}" text-anchor="end" font-size="13" fill="#a9b2c2" font-weight="600">${LABEL[f]||f}</text>`;
+  });
+  DATA.forEach(o=>{ if(!vis(o))return;
+    const i=FAMS.indexOf(o.fam), c=COL[o.fam];
+    // 같은 날·같은 레인에 겹치는 비공개 모델(Mythos 5)은 레인 안에서 아래로 살짝 비킴
+    const y=TOP+(i+0.5)*laneH + (o.restricted?13:0);
+    const tip=`<title>${esc(o.name)} · ${fmtK(o.d)}${o.approx?" (approx)":""}${o.restricted?" · 비공개·제한 접근":""}</title>`;
+    if(o.restricted){ // 속 빈 점 = 비공개
+      s+=`<circle cx="${X(o.t)}" cy="${y}" r="6.5" fill="none" stroke="${c}" stroke-width="2"
+          style="filter:drop-shadow(0 0 5px ${c})">${tip}</circle>`;
+    }else{
+      s+=`<circle cx="${X(o.t)}" cy="${y}" r="7.5" fill="${c}" stroke="#07080c" stroke-width="2"
+          style="filter:drop-shadow(0 0 6px ${c})">${tip}</circle>`;
+    }
+  });
+  setDesc("계열마다 한 줄(lane). 맨 위 Mythos/Fable은 Opus 위 새 티어. 오른쪽(2025 하반기~)으로 갈수록 점이 촘촘해집니다. 속 빈 점 = 비공개·제한 접근(Mythos Preview·Mythos 5).");
+  return svg(H,s);
+}
+
+function svg(H,inner){return `<svg viewBox="0 0 ${VW} ${H}" preserveAspectRatio="xMidYMid meet">${inner}</svg>`;}
+function setDesc(t){document.getElementById("desc").textContent=t;}
+
+function render(){
+  document.getElementById("chart").innerHTML=viewSwim();
+}
+render();
+</script>
+</body>
+</html>

@@ -2,9 +2,14 @@
 
 2026-06-15 (월) S-OIL 울산 온산공장 출강 특강의 수강생 배포용 산출물 저장소입니다.
 
-## 🔗 라이브 데모 (GitHub Pages)
+## 🔗 바로 보기
 
-**계산기 데모:** https://johanjun.github.io/s-oil-260615-handouts/
+| 자료 | 링크 |
+|------|------|
+| 🧮 계산기 데모 | https://johanjun.github.io/s-oil-260615-handouts/ |
+| 📋 예비 실습 프롬프트 모음 | [바로 보기](https://johanjun.github.io/s-oil-260615-handouts/upload_slide/%EC%98%88%EB%B9%84%EC%8B%A4%EC%8A%B5.html) |
+| 📊 강의 슬라이드 통합본 (PDF) | [다운로드](https://github.com/johanjun/s-oil-260615-handouts/blob/main/upload_slide/%ED%86%B5%ED%95%A9%EB%B3%B8_module1-5.pdf) |
+| 🛤️ Claude 모델 스윔레인 | [바로 보기](https://johanjun.github.io/s-oil-260615-handouts/uploads_etc/claude-model-swimlane-soil.html) |
 
 ## 📂 파일 구성
 
@@ -13,9 +18,11 @@
 ├── index.html                       # GitHub Pages 루트 = 계산기 데모 (아래 원본의 복사본)
 ├── upload_codes/
 │   └── 계산기데모_preview.html       # 잔여수명 계산기 데모 (원본)
-└── upload_slide/
-    ├── 예비실습.html                 # 예비 실습 프롬프트 모음 덱 (5종 R-C-T-F 프롬프트)
-    └── 통합본_module1-5.pdf          # 강의 슬라이드 통합본 (모듈 1~5, 약 10.7MB)
+├── upload_slide/
+│   ├── 예비실습.html                 # 예비 실습 프롬프트 모음 덱 (5종 R-C-T-F 프롬프트)
+│   └── 통합본_module1-5.pdf          # 강의 슬라이드 통합본 (모듈 1~5, 약 10.7MB)
+└── uploads_etc/
+    └── claude-model-swimlane-soil.html  # Claude 모델 스윔레인 다이어그램
 ```
 
 ## 📝 참고
