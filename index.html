@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>배관 부식 관리 계산기</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f6f9;
+        margin: 0;
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 700px;
+        margin: auto;
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 25px;
+    }
+
+    .section-title {
+        margin-top: 20px;
+        margin-bottom: 10px;
+        font-weight: bold;
+        color: #34495e;
+        border-bottom: 2px solid #3498db;
+        padding-bottom: 5px;
+    }
+
+    .input-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 600;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 15px;
+    }
+
+    button {
+        width: 100%;
+        padding: 14px;
+        margin-top: 20px;
+        border: none;
+        border-radius: 8px;
+        background: #3498db;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #2980b9;
+    }
+
+    .result {
+        margin-top: 25px;
+        padding: 20px;
+        border-radius: 10px;
+        background: #f8f9fa;
+        display: none;
+    }
+
+    .result-item {
+        margin: 12px 0;
+        font-size: 16px;
+    }
+
+    .status {
+        font-size: 20px;
+        font-weight: bold;
+        text-align: center;
+        padding: 15px;
+        border-radius: 8px;
+        color: white;
+        margin-top: 15px;
+    }
+
+    .green { background: #27ae60; }
+    .orange { background: #f39c12; }
+    .red { background: #e74c3c; }
+
+    .warning {
+        color: red;
+        margin-top: 15px;
+        font-weight: bold;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>배관 부식 관리 계산기</h1>
+
+    <div class="section-title">이전 측정 정보</div>
+
+    <div class="input-group">
+        <label>이전 측정일</label>
+        <input type="date" id="prevDate">
+    </div>
+
+    <div class="input-group">
+        <label>이전 두께 (mm)</label>
+        <input type="number" id="prevThickness" step="0.01">
+    </div>
+
+    <div class="section-title">최근 측정 정보</div>
+
+    <div class="input-group">
+        <label>최근 측정일</label>
+        <input type="date" id="currDate">
+    </div>
+
+    <div class="input-group">
+        <label>최근 두께 (mm)</label>
+        <input type="number" id="currThickness" step="0.01">
+    </div>
+
+    <div class="section-title">기준 정보</div>
+
+    <div class="input-group">
+        <label>최소 요구 두께 (mm)</label>
+        <input type="number" id="minThickness" step="0.01">
+    </div>
+
+    <button onclick="calculate()">계산하기</button>
+
+    <div id="warning" class="warning"></div>
+
+    <div id="result" class="result">
+
+        <div class="result-item">
+            <strong>측정 간격:</strong>
+            <span id="interval"></span>
+        </div>
+
+        <div class="result-item">
+            <strong>부식속도:</strong>
+            <span id="corrosionRate"></span>
+        </div>
+
+        <div class="result-item">
+            <strong>잔여수명:</strong>
+            <span id="remainingLife"></span>
+        </div>
+
+        <div class="result-item">
+            <strong>권장 차기 검사일:</strong>
+            <span id="nextInspection"></span>
+        </div>
+
+        <div id="status" class="status"></div>
+
+    </div>
+
+</div>
+
+<script>
+function calculate() {
+
+    document.getElementById("warning").textContent = "";
+
+    const prevDate = new Date(document.getElementById("prevDate").value);
+    const currDate = new Date(document.getElementById("currDate").value);
+
+    const prevThickness = parseFloat(document.getElementById("prevThickness").value);
+    const currThickness = parseFloat(document.getElementById("currThickness").value);
+    const minThickness = parseFloat(document.getElementById("minThickness").value);
+
+    if (
+        isNaN(prevDate.getTime()) ||
+        isNaN(currDate.getTime()) ||
+        isNaN(prevThickness) ||
+        isNaN(currThickness) ||
+        isNaN(minThickness)
+    ) {
+        document.getElementById("warning").textContent =
+            "모든 항목을 입력하세요.";
+        return;
+    }
+
+    if (currDate <= prevDate) {
+        document.getElementById("warning").textContent =
+            "최근 측정일은 이전 측정일보다 이후여야 합니다.";
+        return;
+    }
+
+    const years =
+        (currDate - prevDate) / (1000 * 60 * 60 * 24 * 365.25);
+
+    const corrosionRate =
+        (prevThickness - currThickness) / years;
+
+    if (corrosionRate <= 0) {
+        document.getElementById("warning").textContent =
+            "부식속도가 0 이하입니다. 입력값을 확인하세요.";
+        return;
+    }
+
+    const remainingLife =
+        (currThickness - minThickness) / corrosionRate;
+
+    if (remainingLife < 0) {
+        document.getElementById("warning").textContent =
+            "최근 두께가 최소 요구 두께보다 작습니다.";
+        return;
+    }
+
+    let inspectionYears = remainingLife / 2;
+
+    if (inspectionYears > 10) {
+        inspectionYears = 10;
+    }
+
+    const nextInspectionDate = new Date(currDate);
+    nextInspectionDate.setDate(
+        nextInspectionDate.getDate() +
+        inspectionYears * 365.25
+    );
+
+    document.getElementById("interval").textContent =
+        years.toFixed(2) + " 년";
+
+    document.getElementById("corrosionRate").textContent =
+        corrosionRate.toFixed(3) + " mm/yr";
+
+    document.getElementById("remainingLife").textContent =
+        remainingLife.toFixed(2) + " 년";
+
+    document.getElementById("nextInspection").textContent =
+        nextInspectionDate.toISOString().split("T")[0];
+
+    const status = document.getElementById("status");
+
+    if (remainingLife < 2) {
+        status.textContent = "긴급 관리 필요";
+        status.className = "status red";
+    }
+    else if (remainingLife < 5) {
+        status.textContent = "주의 관리";
+        status.className = "status orange";
+    }
+    else {
+        status.textContent = "양호";
+        status.className = "status green";
+    }
+
+    document.getElementById("result").style.display = "block";
+}
+</script>
+
+</body>
+</html>
