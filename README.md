@@ -1,5 +1,13 @@
 # S-OIL 울산 실무자 바이브 코딩 특강 — 배포 자료
 
+<p align="center">
+  <a href="https://bit.ly/4ouEO5c">
+    <img src="2apiT.jpg" alt="자료 모음 QR — https://bit.ly/4ouEO5c" width="240">
+  </a>
+  <br>
+  📱 <b><a href="https://bit.ly/4ouEO5c">https://bit.ly/4ouEO5c</a></b> — QR 또는 링크로 자료 모음에 접속하세요
+</p>
+
 2026-06-15 (월) S-OIL 울산 온산공장 출강 특강의 수강생 배포용 산출물 저장소입니다.
 
 ## 🔗 바로 보기
